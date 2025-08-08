@@ -1,6 +1,9 @@
 import { Star, Users } from "lucide-react";
+import './styles.css';
+import { useNavigate } from "react-router-dom";
 
 interface CourseCardProps {
+  id:string;
   image: string;
   title: string;
   description: string;
@@ -9,7 +12,10 @@ interface CourseCardProps {
   users: string;
 }
 
+
+
 export default function CourseCard({
+  id,
   image,
   title,
   description,
@@ -17,9 +23,15 @@ export default function CourseCard({
   rating,
   users,
 }: CourseCardProps) {
+
+  const navigation = useNavigate();
+
+const myCourses = () =>{
+  navigation(`/CourseDetails/${id}`);
+}
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition">
-      <img src={image} alt={title} className="w-full h-40 object-cover" />
+      <img src={image} alt={title} className="w-full h-40 object-cover myhover" onClick={myCourses}/>
       <div className="p-4 space-y-2">
         <h3 className="text-lg font-semibold">{title}</h3>
         <p className="text-sm text-gray-600">{description}</p>

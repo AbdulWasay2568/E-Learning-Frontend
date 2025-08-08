@@ -1,20 +1,36 @@
 import React from 'react';
 import './mystyles.css';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+
 const SignUp:React.FC = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword ] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const navigation = useNavigate();
 
   const mySubmission = (e:React.FormEvent) =>{
     e.preventDefault();
 
-    if(password!=confirmPassword)
+    if(password.length!=8)
+    {
+      alert("Password and confirm password should be length 8!");
+
+    }
+
+    else if(password!=confirmPassword)
     {
       alert("Password and confirm password should be same!")
     }
-    console.log("Name: " + name + " Email: " + email + " Pass: " + password + " conpass: " + confirmPassword);
+
+    else
+    {
+      console.log("Name: " + name + " Email: " + email + " Pass: " + password + " conpass: " + confirmPassword);
+      navigation('/login');
+    }
+   
   }
   return (
     <div>

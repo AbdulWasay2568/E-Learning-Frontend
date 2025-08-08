@@ -6,6 +6,7 @@ import WebDev from "../assets/Images/Courses/WebDev.jpg"
 
 const courseData = [
   {
+    id:'WebDevelopment',
     title: "Full-Stack Web Development",
     description: "Build modern websites using HTML, CSS, JS, and React.",
     instructor: "Abdul Wasay",
@@ -15,6 +16,7 @@ const courseData = [
     image: WebDev
   },
   {
+    id:'MobileApp',
     title: "Mobile App Development",
     description: "Create native mobile apps using React Native.",
     instructor: "Abdul Rehman",
@@ -24,7 +26,8 @@ const courseData = [
     image: WebDev
   },
   {
-    title: "Cloud Fundamentals",
+    id:"Cloud",
+    title: "CloudFundamentals",
     description: "Learn AWS, Azure, and cloud-native technologies.",
     instructor: "Adeel Ahmed",
     rating: 4.6,
@@ -33,6 +36,7 @@ const courseData = [
     image: WebDev
   },
   {
+    id:"Frontend",
     title: "Frontend with Tailwind CSS",
     description: "Style your websites quickly and beautifully.",
     instructor: "Adeel Ahmed",
@@ -42,6 +46,7 @@ const courseData = [
     image: WebDev
   },
   {
+    id:"UI UX",
     title: "App UI/UX Design",
     description: "Design intuitive mobile interfaces and workflows.",
     instructor: "Abdul Rehman",
