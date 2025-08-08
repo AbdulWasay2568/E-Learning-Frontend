@@ -1,13 +1,9 @@
-import React, { useState, useRef, useEffect} from 'react'
+import React, { useState, useEffect} from 'react'
 import ReactPlayer from 'react-player'
 import './coursedetail.css'
 import { useParams } from 'react-router-dom';
 import { ChevronDown } from "lucide-react";
 import myimage from '../../../assets/Images/Chapters/first.webp';
-// import Equalizer from '@jsfather/react-dynamic-equalizer';
-// import { AudioVisualizer } from 'react-audio-visualize';
-import Equalizer from 'r3f-equalizer';
-import { Canvas } from '@react-three/fiber';
 
 interface myallcourses{
   chapterNo: number;
@@ -194,7 +190,7 @@ useEffect(() => {
           <div className="mychaptersection">
             <div className="chapters">
               {/* div */}
-              <div className="myimagediv">
+              <div className="myimagediv" onClick={()=>myEqualizer(e.chapterNo)}>
                 <img src={myimage} alt="chapter" className='myImage' />
               </div>
               <div className="div">
