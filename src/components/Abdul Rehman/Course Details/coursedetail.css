@@ -21,6 +21,9 @@
 .aboutdiv{
     width: 550px;
 }
+.nodiv{
+    width: 550px;
+}
 
 .aboutdiv h2{
     margin-top: 15px;
@@ -44,14 +47,25 @@
   padding-left: 20px;
 }
 
+.cross{
+  display: none;
+}
+.nocross{
+  display: none;
+}
+/* .playlist{
+  display: none;
+} */
+.noplaylist{
+  display: none;
+}
+
 .sections{
   margin-bottom: 50px; 
-  /* background: #A9a9a9; */
 }
 
 .newfeature{
   margin-bottom: 50px; 
-  /* background: #A9a9a9; */
 }
 
 
@@ -132,9 +146,61 @@
   }
   .aboutdiv{
     width: 355px;
+    margin-right: 40px;
 }
+.nodiv{
+  width: 355px;
+  display: none;
+  margin-right: 40px;
 }
 
+.mainDiv{
+    display: flex;
+    flex-direction: column;
+}
+  .cross{
+    color: black;
+    size: 40px;
+    display:flex;
+    flex-direction: row-reverse;
+    margin-right: 10px;
+  }
+
+  .playlist{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+}
+.noplaylist{
+  display: none;
+}
+.mycross{
+  size: 20px;
+}
+
+.nocross{
+  display: none;
+}
+  .showNothing{
+    margin-top: 40px;
+    display: none;
+  }
+
+  .seconddiv{
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+  background: #f1f1f1;
+  border-radius: 25px;
+  width: 90%;
+  padding-top: 25px;
+  padding-left: 20px;
+  margin-top: 20px;
+}
+}
 @media (max-width: 385px) {
   .myYoutubePLayer {
     width: 300px;
@@ -143,5 +209,25 @@
 
    .aboutdiv{
     width: 300px;
+    margin-right: 40px;
 }
+
+.nodiv{
+  width: 300px;
+  margin-right: 40px;
+}
+
+.mainDiv{
+    display: flex;
+    flex-direction: column;
+}
+
+
+.cross{
+    color: black;
+    size: 50px;
+    display:flex;
+    flex-direction: row-reverse;
+    margin-right: 20px;
+  }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react'
 import ReactPlayer from 'react-player'
 import './coursedetail.css'
 import { useParams } from 'react-router-dom';
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp, Cross } from "lucide-react";
 import myimage from '../../../assets/Images/Chapters/first.webp';
 
 interface myallcourses{
@@ -45,7 +45,7 @@ else if (id === "MobileApp") {
   ];
 }
 
-else if (id === "CloudFundamental") {
+else if (id === "Cloud") {
   chapters = [
     { chapterNo: 1, chapterName: "Introduction to Cloud", description: "What is cloud computing and why it matters?" },
     { chapterNo: 2, chapterName: "Types of Cloud Services", description: "Understand IaaS, PaaS, and SaaS models." },
@@ -97,7 +97,7 @@ if (id === "WebDevelopment") {
       about: `This course is tailored for those looking to dive into the world of cross-platform mobile application development. Starting from core programming concepts, you'll explore tools like React Native and Flutter to build apps for both Android and iOS platforms using a single codebase. You'll learn how to design intuitive user interfaces, integrate APIs, manage state efficiently using tools like Redux or Provider, and connect your apps to cloud-based backends like Firebase. The course also covers testing, debugging, and publishing apps to the Google Play Store and Apple App Store. By the end, you'll be able to create responsive, secure, and performance-optimized mobile apps for real-world use cases.`
     }
   ];
-} else if (id === "CloudFundamental") {
+} else if (id === "Cloud") {
   mydescription = [
     {
       name: "Cloud Fundamentals",
@@ -132,10 +132,7 @@ if (id === "WebDevelopment") {
     setActiveChapter(e => e === chapterNo ? null : chapterNo);
   }
 
-  //  const [activeChapter, setActiveChapter] = useState<number| null>(null);
-  // const myEqualizer = (chapterNo: number) =>{
-  //   setActiveChapter(e => e === chapterNo ? null : chapterNo);
-  // }
+ 
   const [highlight, setHighlight] = useState<number| null>(null);
     const myEqualizer = (chapterNo: number) =>{
     setHighlight(e => e === chapterNo ? null : chapterNo);
@@ -152,6 +149,12 @@ useEffect(() => {
   }
 }, [highlight]); 
 
+// show or not
+const [forceShow, setForceShow] = useState<boolean>(false);
+
+const showAbout = () =>{
+  setForceShow(!forceShow);
+}
  
   return (
     <div className='container mx-auto px-4 mainDiv'>
@@ -168,7 +171,7 @@ useEffect(() => {
 
         {/* about div */}
      {mydescription.map((e)=>(
-        <div className="aboutdiv">
+        <div className={forceShow?'aboutdiv':'nodiv'}>
          
           <h3 className='heading'>{e.name} Course</h3>
           <h2 className='secondheading'>About Course</h2>
@@ -181,14 +184,29 @@ useEffect(() => {
 
           {/* second div */}
       <div className='seconddiv'>
+        <div className="cross" >
+          <Cross onClick={()=>showAbout()} className={forceShow?'nocross':'mycross'}/>
+        </div>
+        <div className={forceShow?'playlist':'noplaylist'} onClick={()=>showAbout()}>
+              <div><p style={{fontSize:"18px", fontWeight:'500'}}>Show Playlist</p></div>
+                
+                <div> <ChevronUp className='cross'/> </div>
+            </div>
+        
           {chapters.map((e) => {
           const active = activeChapter === e.chapterNo;
           const equalizer = highlight === e.chapterNo;
+          
+         
+        
+          
           return (
-    
-         <div className={active? 'sections':'newfeature'} key={e.chapterNo}>
+            
+         <div className={`${active ? 'sections' : 'newfeature'} ${forceShow ? 'showNothing' : 'playlist'}`} key={e.chapterNo} >
+          
           <div className="mychaptersection">
             <div className="chapters">
+              
               {/* div */}
               <div className="myimagediv" onClick={()=>myEqualizer(e.chapterNo)}>
                 <img src={myimage} alt="chapter" className='myImage' />
@@ -196,6 +214,7 @@ useEffect(() => {
               <div className="div">
                 <h3 className='myheading' onClick={()=>myEqualizer(e.chapterNo)}>Chapter {e.chapterNo}: {e.chapterName}</h3>
               </div>
+              
 
               <div className= {equalizer?'equalizer':'notequalizer'}>
       {heights.map((h, i) => (
@@ -223,6 +242,7 @@ useEffect(() => {
          </div>
          )})}
       </div>
+       
       
     </div>
   )
