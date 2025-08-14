@@ -14,6 +14,7 @@ import AdminLayout from './layouts/AdminLayout';
 
 import SignUp from './components/Abdul Rehman/SignUp';
 import CourseDetail from './components/Abdul Rehman/Course Details/CourseDetail';
+import Support from './components/Abdul Rehman/Support/Support';
 // Dummy user role (replace this with real logic from context or redux)
 const userRole = 'student'; // 'admin' | 'student' | null
 
@@ -27,6 +28,7 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path='/CourseDetails/:id' element={<CourseDetail />}/>
+        <Route path='/Support' element={<Support />}/>
       </Route>
 
       {/* Student Routes */}
