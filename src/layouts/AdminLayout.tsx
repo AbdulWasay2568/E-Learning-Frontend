@@ -1,18 +1,17 @@
-import Navbar from '../components/Navbar';
 import SidebarAdmin from '../components/admin/SideBarAdmin';
 import { Outlet } from 'react-router-dom';
+import NotificationBar from '../components/Notifcationsbar';
 
 const AdminLayout = () => {
   return (
     <div className="flex min-h-screen">
       <SidebarAdmin />
-      <div className="flex-1 flex flex-col">
-        <Navbar />
-        <main className="p-4">
+        <main className="flex-1 p-4 lg:ml-72 lg:mt-0 mt-16">
+          <NotificationBar message="New course update available!" />
+          
           <Outlet />
         </main>
       </div>
-    </div>
   );
 };
 
