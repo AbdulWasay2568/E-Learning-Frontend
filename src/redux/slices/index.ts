@@ -1,0 +1,15 @@
+export { default as authReducer } from './auth.slice';
+export { default as userReducer } from './user.slice';
+export { default as courseReducer } from './course.slice';
+export { default as lectureReducer } from './lecture.slice';
+export { default as noteReducer } from './note.slice';
+export { default as enrollmentReducer } from './enrollment.slice';
+export { default as quizReducer } from './quiz.slice';
+export { default as questionReducer } from './question.slice';
+export { default as progressReducer } from './progress.slice';
+export { default as groupReducer } from './group.slice';
+export { default as groupMemberReducer } from './group-member.slice';
+export { default as chatMessageReducer } from './chat-message.slice';
+export { default as feedbackReducer } from './feedback.slice';
+export { default as commentReducer } from './comment.slice';
+export { default as loadingReducer } from './loading.slice'; 
