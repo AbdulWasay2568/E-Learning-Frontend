@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchChatMessages,
   fetchChatMessageById,
@@ -8,7 +9,7 @@ import {
   fetchChatMessagesByGroup,
   fetchChatMessagesByUser,
 } from '../../services/chatMessageService';
-import { CreateChatMessageDto, UpdateChatMessageDto } from '../../interfaces/chat-message.interface';
+import type { CreateChatMessageDto, UpdateChatMessageDto } from '../../interfaces/chat-message.interface';
 
 interface ChatMessageState {
   chatMessages: any[];

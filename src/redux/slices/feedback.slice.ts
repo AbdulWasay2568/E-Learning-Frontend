@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchFeedbacks,
   fetchFeedbackById,
@@ -9,7 +10,7 @@ import {
   fetchFeedbacksByUser,
   getAverageRatingByCourse,
 } from '../../services/feedbackService';
-import { CreateFeedbackDto, UpdateFeedbackDto } from '../../interfaces/feedback.interface';
+import type { CreateFeedbackDto, UpdateFeedbackDto } from '../../interfaces/feedback.interface';
 
 interface FeedbackState {
   feedbacks: any[];

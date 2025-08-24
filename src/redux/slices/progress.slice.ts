@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchProgress,
   fetchProgressById,
@@ -9,7 +10,7 @@ import {
   fetchProgressByLecture,
   fetchProgressByUserAndLecture,
 } from '../../services/progressService';
-import { CreateProgressDto, UpdateProgressDto } from '../../interfaces/progress.interface';
+import type { CreateProgressDto, UpdateProgressDto } from '../../interfaces/progress.interface';
 
 interface ProgressState {
   progress: any[];

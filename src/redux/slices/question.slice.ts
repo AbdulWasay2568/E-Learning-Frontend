@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchQuestions,
   fetchQuestionById,
@@ -7,7 +8,7 @@ import {
   deleteQuestion,
   fetchQuestionsByQuiz,
 } from '../../services/questionService';
-import { CreateQuestionDto, UpdateQuestionDto } from '../../interfaces/question.interface';
+import type { CreateQuestionDto, UpdateQuestionDto } from '../../interfaces/question.interface';
 
 interface QuestionState {
   questions: any[];

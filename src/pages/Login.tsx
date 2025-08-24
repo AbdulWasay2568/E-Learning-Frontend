@@ -1,15 +1,29 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { login } from "../redux/slices/auth.slice";
+import { setCurrentUser, getUserById } from "../redux/slices/user.slice";
 
 export default function Login() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { error } = useAppSelector((state) => state.auth);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    try {
+      const user = await dispatch(login({ email, password })).unwrap();
+      const fetchedUser = await dispatch(getUserById(Number(user.id))).unwrap();
+      dispatch(setCurrentUser(fetchedUser));
+
+      navigate(fetchedUser.role === "Student" ? "/student/dashboard" : "/");
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
 
   return (
@@ -19,7 +33,7 @@ export default function Login() {
           Welcome Back
         </h2>
         <form onSubmit={handleLogin} className="space-y-5">
-
+          {/* Email Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
@@ -34,6 +48,7 @@ export default function Login() {
             />
           </div>
 
+          {/* Password Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -48,6 +63,7 @@ export default function Login() {
             />
           </div>
 
+          {/* Forgot Password */}
           <div className="text-right">
             <Link
               to="/forgot-password"
@@ -57,6 +73,14 @@ export default function Login() {
             </Link>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="p-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          {/* Login Button */}
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors"
@@ -65,6 +89,7 @@ export default function Login() {
           </button>
         </form>
 
+        {/* Register Link */}
         <p className="mt-6 text-center text-sm text-gray-600">
           Don’t have an account?{" "}
           <Link to="/signup" className="text-blue-600 font-semibold hover:underline">

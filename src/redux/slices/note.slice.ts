@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchNotes,
   fetchNoteById,
@@ -8,7 +9,7 @@ import {
   fetchNotesByUser,
   fetchNotesByLecture,
 } from '../../services/noteService';
-import { CreateNoteDto, UpdateNoteDto } from '../../interfaces/note.interface';
+import type { CreateNoteDto, UpdateNoteDto } from '../../interfaces/note.interface';
 
 interface NoteState {
   notes: any[];

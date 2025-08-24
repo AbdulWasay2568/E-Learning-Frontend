@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchLectures,
   fetchLectureById,
@@ -7,7 +8,7 @@ import {
   deleteLecture,
   fetchLecturesByCourse,
 } from '../../services/lectureService';
-import { CreateLectureDto, UpdateLectureDto } from '../../interfaces/lecture.interface';
+import type { CreateLectureDto, UpdateLectureDto } from '../../interfaces/lecture.interface';
 
 interface LectureState {
   lectures: any[];

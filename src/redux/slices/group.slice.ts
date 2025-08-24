@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchGroups,
   fetchGroupById,
@@ -6,7 +7,7 @@ import {
   updateGroup,
   deleteGroup,
 } from '../../services/groupService';
-import { CreateGroupDto, UpdateGroupDto } from '../../interfaces/group.interface';
+import type { CreateGroupDto, UpdateGroupDto } from '../../interfaces/group.interface';
 
 interface GroupState {
   groups: any[];

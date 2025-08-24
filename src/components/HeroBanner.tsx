@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import logo from "../assets/Images/John.jpg";
 const slides = [
   {
     title: "Unlock Your Potential with AI Learning",
     subtitle: "Access smart tools, engaging content, and collaborative study features to excel in your studies.",
-    image: "https://via.placeholder.com/800x300?text=AI+Learning",
+    image: logo,
   },
   {
     title: "Summarized Notes & Smart Search",
     subtitle: "Get concise lecture notes and find what you need in seconds with AI-driven search.",
-    image: "https://via.placeholder.com/800x300?text=Smart+Notes",
+    image: logo,
   },
   {
     title: "Collaborate & Grow Together",
     subtitle: "Form student groups, take quizzes, and interact through AI-powered chat support.",
-    image: "https://via.placeholder.com/800x300?text=Collaboration",
+    image: logo,
   },
 ];
 
@@ -31,7 +31,7 @@ export default function HeroBanner() {
       <img
         src={slides[current].image}
         alt="Banner"
-        className="w-full h-64 object-cover opacity-70"
+        className="w-full h-64 object-contain opacity-70"
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
         <h1 className="text-4xl font-bold mb-3">{slides[current].title}</h1>

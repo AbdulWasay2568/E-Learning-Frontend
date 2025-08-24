@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchEnrollments,
   fetchEnrollmentById,
@@ -9,7 +10,7 @@ import {
   fetchEnrollmentsByCourse,
   checkEnrollment,
 } from '../../services/enrollmentService';
-import { CreateEnrollmentDto, UpdateEnrollmentDto } from '../../interfaces/enrollment.interface';
+import type { CreateEnrollmentDto, UpdateEnrollmentDto } from '../../interfaces/enrollment.interface';
 
 interface EnrollmentState {
   enrollments: any[];

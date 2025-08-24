@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchUsers,
   fetchUserById,
@@ -7,7 +8,7 @@ import {
   deleteUser,
   updateUserImage,
 } from '../../services/userService';
-import { CreateUserDto, UpdateUserDto } from '../../interfaces/user.interface';
+import type { CreateUserDto, UpdateUserDto } from '../../interfaces/user.interface';
 
 interface UserState {
   users: any[];

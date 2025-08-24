@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchComments,
   fetchCommentById,
@@ -9,7 +10,7 @@ import {
   fetchCommentsByUser,
   fetchCommentReplies,
 } from '../../services/commentService';
-import { CreateCommentDto, UpdateCommentDto } from '../../interfaces/comment.interface';
+import type { CreateCommentDto, UpdateCommentDto } from '../../interfaces/comment.interface';
 
 interface CommentState {
   comments: any[];

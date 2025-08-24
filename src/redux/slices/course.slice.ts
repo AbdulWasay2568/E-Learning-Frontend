@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchCourses,
   fetchCourseById,
@@ -7,7 +8,7 @@ import {
   deleteCourse,
   fetchCoursesByTeacher,
 } from '../../services/courseService';
-import { CreateCourseDto, UpdateCourseDto } from '../../interfaces/course.interface';
+import type { CreateCourseDto, UpdateCourseDto } from '../../interfaces/course.interface';
 
 interface CourseState {
   courses: any[];
