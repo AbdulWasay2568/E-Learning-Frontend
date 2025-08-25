@@ -65,8 +65,6 @@ const SignUp:React.FC = () => {
               {/* </div> */}
 
             </div>
-        
-        
       </form>
     </div>
   )

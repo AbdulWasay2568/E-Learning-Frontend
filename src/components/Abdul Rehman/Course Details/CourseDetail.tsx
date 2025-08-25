@@ -216,15 +216,15 @@ const showAbout = () =>{
               </div>
               
 
-              <div className= {equalizer?'equalizer':'notequalizer'}>
-      {heights.map((h, i) => (
-        <div
-          key={i}
-          className="bar"
-          style={{ height: `${h}px` }}
-        ></div>
-      ))}
-    </div>
+                            <div className= {equalizer?'equalizer':'notequalizer'}>
+                    {heights.map((h, i) => (
+                      <div
+                        key={i}
+                        className="bar"
+                        style={{ height: `${h}px` }}
+                      ></div>
+                    ))}
+                  </div>
                     
                     
             </div>

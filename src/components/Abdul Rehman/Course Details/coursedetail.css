@@ -167,8 +167,8 @@
   }
 
   .playlist{
-  display: flex;
-  flex-direction: row;
+  /* display: flex; */
+  /* flex-direction: row; */
   align-items: center;
   justify-content: space-between;
   padding-bottom: 20px;
@@ -200,6 +200,19 @@
   padding-left: 20px;
   margin-top: 20px;
 }
+  
+.showDescription{
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+   clear: both;
+}
+
+.hideDescription{
+  display: none;
+}
+
+
 }
 @media (max-width: 385px) {
   .myYoutubePLayer {

@@ -17,7 +17,7 @@ const Navbar = () => {
         <div className="hidden md:flex space-x-6 items-center">
           <Link to="/" className="hover:text-violet-600 font-medium">Home</Link>
           <Link to="/courses" className="hover:text-violet-600 font-medium">Courses</Link>
-          <Link to="/groups" className="hover:text-violet-600 font-medium">Groups</Link>
+          <Link to="/Group-Detail" className="hover:text-violet-600 font-medium">Group</Link>
           <Link to="/support" className="hover:text-violet-600 font-medium">Support</Link>
           <Link to="/login" className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 transition">Login</Link>
         </div>
@@ -35,7 +35,7 @@ const Navbar = () => {
         <div className="md:hidden bg-white px-4 pb-4 space-y-2 border-t">
           <Link to="/" className="block hover:text-violet-600">Home</Link>
           <Link to="/courses" className="block hover:text-violet-600">Courses</Link>
-          <Link to="/groups" className="block hover:text-violet-600">Groups</Link>
+          <Link to="/Group-Detail" className="block hover:text-violet-600">Groups</Link>
           <Link to="/support" className="block hover:text-violet-600">Support</Link>
           <Link to="/login" className="block px-4 py-2 bg-violet-600 text-white rounded text-center hover:bg-violet-700">Login</Link>
         </div>
