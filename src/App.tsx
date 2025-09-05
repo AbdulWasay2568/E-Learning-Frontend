@@ -9,6 +9,7 @@ import Notifications from './pages/Notifications';
 // Student
 import StudentDashboard from './pages/student/StudentDashboard';
 import CoursePage from './pages/course/CorusePage';
+import CourseDetail from './components/course/CourseDetails';
 // Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
 // Layouts
@@ -38,6 +39,7 @@ const App: React.FC = () => {
           
           <Route path="/course/video" element={<CoursePage />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/course/:id" element={<CourseDetail />} />
 
           {/* Add more student-specific routes here */}
         </Route>

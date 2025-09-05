@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import { useParams } from "react-router-dom";
 import { ChevronDown, ChevronUp, X as Cross } from "lucide-react";
-import myimage from "../../../assets/Images/Chapters/first.webp";
+import myimage from "../../assets/Images/Chapters/first.webp";
 
 interface MyAllCourses {
   chapterNo: number;
