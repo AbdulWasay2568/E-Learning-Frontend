@@ -16,6 +16,7 @@ import PublicLayout from './layouts/PublicLayout';
 import StudentLayout from './layouts/StudentLayout';
 import AdminLayout from './layouts/AdminLayout';
 
+
 const userRole = 'student'; // 'admin' | 'student' | null
 
 const App: React.FC = () => {
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           
           <Route path="/course/video" element={<CoursePage />} />
           <Route path="/notifications" element={<Notifications />} />
+
           {/* Add more student-specific routes here */}
         </Route>
       )}
