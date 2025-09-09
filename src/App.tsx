@@ -1,5 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Role } from "./interfaces/enums.interface";
+
 
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
@@ -10,23 +12,22 @@ import Support from './pages/Support';
 
 // Student
 import StudentDashboard from './pages/student/StudentDashboard';
-import CoursePage from './pages/course/CorusePage';
+import LecturePage from './pages/course/LecturePage';
 // Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
+import CourseManagement from './pages/course/CourseManagement';
 // Course
 import CourseDetail from './pages/course/CourseDetails';
 import CreateEditCourse from './pages/course/CreateEditCourse';
-import LecturesPage from './pages/course/LecturesPage';
 import LectureForm from './pages/course/LectureForm';
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
 import StudentLayout from './layouts/StudentLayout';
 import AdminLayout from './layouts/AdminLayout';
 
-
-const userRole = 'student'; // 'admin' | 'student' | null
-
 const App: React.FC = () => {
+  const userRole = "Student"; //Student | Admin | null
+
   return (
     <Routes>
       {/* Public Routes */}
@@ -37,31 +38,32 @@ const App: React.FC = () => {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/support" element={<Support />} />
+{/* Courses */}
+        <Route path="/course/detail/:id" element={<CourseDetail />} />
+
 
       </Route>
 
       {/* Student Routes */}
-      {userRole === 'student' && (
+      {userRole === Role.Student && (
         <Route element={<StudentLayout />}>
           <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/course/:courseId/lecture/:lectureId" element={<LecturePage />} />
 
-          <Route path="/course/detail" element={<CourseDetail />} />
-          <Route path="/course/video" element={<CoursePage />} />
-          <Route path="/notifications" element={<Notifications />} />
           {/* Add more student-specific routes here */}
         </Route>
       )}
 
       {/* Admin Routes */}
-      {userRole === 'admin' && (
+      {userRole === Role.Admin && (
         <Route element={<AdminLayout />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/course/create" element={<CreateEditCourse />} />
+{/* Courses */}
+          <Route path="/admin/courses" element={<CourseManagement />} />
+          <Route path="/course/new" element={<CreateEditCourse />} />
           <Route path="/course/edit/:id" element={<CreateEditCourse />} />
-          <Route path="/course/lectures" element={<LecturesPage />} />
-          <Route path="/course/lectures/new" element={<LectureForm />} />
-          <Route path="/course/lectures/:id/edit" element={<LectureForm />} />
-          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/course/:courseId/lectures/new" element={<LectureForm />} />
+          <Route path="/course/:courseId/lectures/:id/edit" element={<LectureForm />} />
           {/* Add more admin-specific routes here */}
         </Route>
       )}

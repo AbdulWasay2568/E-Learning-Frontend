@@ -1,6 +1,20 @@
 import { apiClient } from './axios';
 import type { CreateCourseDto, UpdateCourseDto } from '../interfaces/course.interface';
 
+export const createCourse = async (data: CreateCourseDto, imageFile: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    formData.append('data', JSON.stringify(data));
+
+    const res = await apiClient.post('/courses', formData);
+    return res.data.course;
+  } catch (err) {
+    console.error('Failed to create course:', err);
+    throw err;
+  }
+};
+
 export const fetchCourses = async () => {
   try {
     const res = await apiClient.get('/courses');
@@ -21,19 +35,20 @@ export const fetchCourseById = async (id: number) => {
   }
 };
 
-export const createCourse = async (data: CreateCourseDto) => {
+export const updateCourseById = async (
+  id: number,
+  data: UpdateCourseDto,
+  imageFile?: File
+) => {
   try {
-    const res = await apiClient.post('/courses', data);
-    return res.data.course;
-  } catch (err) {
-    console.error('Failed to create course:', err);
-    throw err;
-  }
-};
+    const formData = new FormData();
 
-export const updateCourse = async (id: number, data: UpdateCourseDto) => {
-  try {
-    const res = await apiClient.put(`/courses/${id}`, data);
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+    formData.append("data", JSON.stringify(data));
+
+    const res = await apiClient.put(`/courses/${id}`, formData);
     return res.data.course;
   } catch (err) {
     console.error(`Failed to update course ${id}:`, err);

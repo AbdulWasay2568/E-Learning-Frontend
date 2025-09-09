@@ -2,17 +2,21 @@ import React, { useState } from "react";
 import NotesSection from "./NotesSection";
 import CommentsSection from "./CommentsSection";
 
+interface VideoNotesCommentsProps {
+  lectureId: number;
+}
+
 const tabs = ["Notes", "Comments"];
 
-const VideoNotesComments: React.FC = () => {
+const VideoNotesComments: React.FC<VideoNotesCommentsProps> = ({ lectureId }) => {
   const [activeTab, setActiveTab] = useState("Notes");
 
   const renderContent = () => {
     switch (activeTab) {
       case "Notes":
-        return <NotesSection />;
+        return <NotesSection lectureId={lectureId} />;
       case "Comments":
-        return <CommentsSection />;
+        return <CommentsSection lectureId={lectureId} />;
       default:
         return null;
     }

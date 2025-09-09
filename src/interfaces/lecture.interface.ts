@@ -1,22 +1,24 @@
 export interface Lecture {
   id: number;
   title: string;
+  description: string;
   videoUrl: string;
-  duration: number;
-  createdAt: string;
+  duration: string;
   courseId: number;
 }
 
 export interface CreateLectureDto {
   title: string;
-  videoUrl: string;
-  duration: number;
+  description: string;
+  video: File;
+  duration: string;
   courseId: number;
 }
 
 export interface UpdateLectureDto {
   title?: string;
+  description?: string;
   videoUrl?: string;
-  duration?: number;
+  duration?: string;
   courseId?: number;
 } 

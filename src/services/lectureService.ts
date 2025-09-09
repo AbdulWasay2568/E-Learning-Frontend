@@ -23,10 +23,18 @@ export const fetchLectureById = async (id: number) => {
 
 export const createLecture = async (data: CreateLectureDto) => {
   try {
-    const res = await apiClient.post('/lectures', data);
-    return res.data.lecture;
+    const formData = new FormData();
+    const { title, description, duration, courseId, video } = data;
+    formData.append("data", JSON.stringify({ title, description, duration, courseId }));
+    
+    // Append the actual video file
+    formData.append("video", video);
+
+    const res = await apiClient.post("/lectures", formData);
+
+    return res.data;
   } catch (err) {
-    console.error('Failed to create lecture:', err);
+    console.error("Failed to create lecture:", err);
     throw err;
   }
 };

@@ -1,28 +1,39 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { login } from "../redux/slices/auth.slice";
-import { setCurrentUser, getUserById } from "../redux/slices/user.slice";
+import { loginUser } from "../services/authService"; // <-- your API function
 
 export default function Login() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { error } = useAppSelector((state) => state.auth);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     try {
-      const user = await dispatch(login({ email, password })).unwrap();
-      const fetchedUser = await dispatch(getUserById(Number(user.id))).unwrap();
-      dispatch(setCurrentUser(fetchedUser));
+      const user = await loginUser({ email, password });
 
-      navigate(fetchedUser.role === "Student" ? "/student/dashboard" : "/");
+      if (!user) {
+        setError("Invalid email or password");
+        setLoading(false);
+        return;
+      }
+
+      // Save user info in localStorage/sessionStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect based on role
+      navigate(user.role === "Student" ? "/student/dashboard" : "/admin/dashboard");
     } catch (err) {
       console.error("Login failed:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,9 +94,10 @@ export default function Login() {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

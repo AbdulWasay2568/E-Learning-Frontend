@@ -1,17 +1,23 @@
 import React, { useState } from "react";
-import VideoPlayer from "../../components/course/VideoPlayer";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import type { Lecture } from "../../interfaces/lecture.interface";
+import { createLecture, updateLecture } from "../../services/lectureService";
+
+interface LocationState {
+  lecture?: Lecture;
+}
 
 const LectureForm: React.FC = () => {
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
-  const [video, setVideo] = useState<File | null>(null);
-  const [title, setTitle] = useState("");
-  const [duration, setDuration] = useState("");
+  const { courseId, lectureId } = useParams<{ courseId: string; lectureId?: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as LocationState;
 
-  const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setThumbnail(e.target.files[0]);
-    }
-  };
+  const [video, setVideo] = useState<File | null>(null);
+  const [title, setTitle] = useState(state?.lecture?.title || "");
+  const [description, setDescription] = useState(state?.lecture?.description || "");
+  const [duration, setDuration] = useState(state?.lecture?.duration || "");
+  const [loading, setLoading] = useState(false);
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -19,51 +25,66 @@ const LectureForm: React.FC = () => {
     }
   };
 
-  const handleSaveLecture = () => {
-    console.log({
-      thumbnail,
-      video,
-      title,
-      duration,
-    });
+  const handleSaveLecture = async () => {
+    if (!courseId) return;
+    setLoading(true);
+
+    try {
+      if (lectureId) {
+        // ✅ Update existing lecture
+        await updateLecture(Number(lectureId), {
+          title,
+          description,
+          duration,
+          courseId: Number(courseId),
+          ...(video ? { video } : {}), // include video only if uploaded
+        });
+      } else {
+        // ✅ Create new lecture
+        if (!video) {
+          alert("Please upload a video file.");
+          return;
+        }
+        await createLecture({
+          title,
+          description,
+          duration,
+          courseId: Number(courseId),
+          video,
+        });
+      }
+
+      alert("Lecture saved successfully!");
+      navigate(`/course/${courseId}`);
+    } catch (error) {
+      console.error("Failed to save lecture:", error);
+      alert("Something went wrong while saving lecture.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-6 mt-6 sm:mt-8">
       <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center">
-        Create / Edit Lecture
+        {lectureId ? "Edit Lecture" : "Create Lecture"}
       </h2>
-
-      {/* Thumbnail Section */}
-      <div className="flex flex-col items-center mb-6">
-        {thumbnail ? (
-          <img
-            src={URL.createObjectURL(thumbnail)}
-            alt="Thumbnail Preview"
-            className="w-40 sm:w-48 h-28 sm:h-32 object-cover rounded-lg shadow-md mb-4"
-          />
-        ) : (
-          <div className="w-40 sm:w-48 h-28 sm:h-32 flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg mb-4 text-gray-500 text-sm sm:text-base">
-            No Thumbnail
-          </div>
-        )}
-        <label className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-          Upload Thumbnail
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleThumbnailUpload}
-            className="hidden"
-          />
-        </label>
-      </div>
 
       {/* Video Section */}
       <div className="mb-6">
-        <div className="w-full max-w-3xl mx-auto">
-          <VideoPlayer />
-        </div>
-        <div className="flex justify-center mt-4">
+        <div className="flex flex-col items-center mt-4 space-y-4">
+          {/* ✅ Show current video if editing and no new file uploaded */}
+          {!video && state?.lecture?.videoUrl && (
+            <div className="w-full max-w-lg">
+              <video
+                src={state.lecture.videoUrl}
+                controls
+                className="rounded-lg border border-gray-300 w-full"
+              />
+            </div>
+          )}
+
+          {/* Upload button */}
           <label className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
             Upload Video
             <input
@@ -73,6 +94,9 @@ const LectureForm: React.FC = () => {
               className="hidden"
             />
           </label>
+
+          {/* ✅ Show uploaded video filename */}
+          {video && <span className="text-sm">{video.name}</span>}
         </div>
       </div>
 
@@ -86,6 +110,17 @@ const LectureForm: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter lecture title"
             className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter lecture description"
+            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+            rows={3}
           />
         </div>
 
@@ -105,9 +140,10 @@ const LectureForm: React.FC = () => {
       <div className="flex justify-center mt-6">
         <button
           onClick={handleSaveLecture}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium w-full sm:w-auto"
+          disabled={loading}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium w-full sm:w-auto disabled:opacity-50"
         >
-          Save Lecture
+          {loading ? "Saving..." : "Save Lecture"}
         </button>
       </div>
     </div>

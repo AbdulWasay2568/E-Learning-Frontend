@@ -6,6 +6,7 @@ import {
   LogOut,
   Menu,
   X,
+  Home,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,6 +19,7 @@ const SideBarStudent = () => {
   };
 
   const menuItems = [
+    { label: "Home", icon: Home, path: "/" },
     { label: "Dashboard", icon: LayoutDashboard, path: "/student/dashboard" },
     { label: "My Courses", icon: BookOpenCheck, path: "/student/courses" },
     { label: "Profile", icon: User, path: "/student/profile" },

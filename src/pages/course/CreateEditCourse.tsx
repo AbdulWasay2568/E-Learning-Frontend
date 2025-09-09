@@ -1,40 +1,75 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const CourseForm: React.FC = () => {
-  const [image, setImage] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ Replace Redux auth.user with dummy logged-in teacherId
+  const user = { id: 1, name: "Demo Teacher" };
+
+  // Check if editing
+  const editingCourse = location.state?.course || null;
+
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(
+    editingCourse?.thumbnail || null
+  );
+  const [title, setTitle] = useState(editingCourse?.title || "");
+  const [description, setDescription] = useState(
+    editingCourse?.description || ""
+  );
+  const [duration, setDuration] = useState(editingCourse?.duration || "");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files?.[0] || null;
+    setThumbnail(file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = () => {
-    // Normally, save course via API
-    const courseData = { image, title, description, duration, sections };
-    console.log("Course Saved:", courseData);
+  const handleSubmit = async () => {
+    const teacherId = user?.id;
+    const courseData = { title, description, duration, teacherId };
 
-    // Redirect to lectures page
-    navigate("/lectures");
+    try {
+      if (editingCourse) {
+        // ✅ Update existing course (replace with real API call)
+        console.log("Updating course:", {
+          id: editingCourse.id,
+          data: courseData,
+          imageFile: thumbnail,
+        });
+      } else {
+        // ✅ Create new course (replace with real API call)
+        console.log("Creating new course:", {
+          data: courseData,
+          imageFile: thumbnail,
+        });
+      }
+
+      navigate("/admin/courses");
+    } catch (err) {
+      console.error("Error saving course:", err);
+    }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
       <h1 className="text-2xl font-bold mb-6 text-center">
-        Create / Edit Course
+        {editingCourse ? "Edit Course" : "Create Course"}
       </h1>
 
       {/* Image Upload */}
       <div className="flex flex-col items-center mb-6">
-        {image ? (
+        {preview ? (
           <img
-            src={image}
-            alt="Course"
+            src={preview}
+            alt="Preview"
             className="w-48 h-48 object-cover rounded-xl border mb-4"
           />
         ) : (
@@ -42,6 +77,7 @@ const CourseForm: React.FC = () => {
             No Image
           </div>
         )}
+
         <input
           type="file"
           accept="image/*"
@@ -53,7 +89,7 @@ const CourseForm: React.FC = () => {
           htmlFor="upload"
           className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
         >
-          Upload Picture
+          {editingCourse ? "Change Picture" : "Upload Picture"}
         </label>
       </div>
 
@@ -96,9 +132,9 @@ const CourseForm: React.FC = () => {
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        className="w-full py-3 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 font-semibold"
+        className="w-full py-3 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 font-semibold cursor-pointer"
       >
-        Create / Edit Course
+        {editingCourse ? "Update Course" : "Create Course"}
       </button>
     </div>
   );

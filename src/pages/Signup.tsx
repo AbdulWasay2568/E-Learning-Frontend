@@ -1,33 +1,40 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { register } from "../redux/slices/auth.slice";
+import { registerUser } from "../services/authService"; // <-- your API call
 import { Role } from "../interfaces/enums.interface";
 
 export default function SignUp() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { error } = useAppSelector((state) => state.auth);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     try {
-      const resultAction = await dispatch(
-        register({ name, email, password, role: Role.Student })
-      );
+      const result = await registerUser({
+        name,
+        email,
+        password,
+        role: Role.Student,
+      });
 
-      if (register.fulfilled.match(resultAction)) {
+      if (result) {
         navigate("/login");
       } else {
-        console.error("Registration failed:", resultAction.payload);
+        setError("Registration failed. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Something went wrong:", err);
+      setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,8 +101,10 @@ export default function SignUp() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50">
-              Register
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 

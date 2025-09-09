@@ -11,7 +11,6 @@ export interface Course {
 export interface CreateCourseDto {
   title: string;
   description?: string;
-  thumbnail?: string;
   teacherId: number;
 }
 

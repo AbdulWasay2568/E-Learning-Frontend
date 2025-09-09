@@ -2,7 +2,6 @@ import SideBarStudent from '../components/student/SideBarStudent';
 import FloatingChatbot from '../components/student/FloatingChatbot'; 
 import NotificationBar from '../components/Notifcationsbar'; // <-- import it
 import { Outlet } from 'react-router-dom';
-import Loader from '../components/Loader';
 
 const StudentLayout = () => {
   return (
@@ -13,7 +12,6 @@ const StudentLayout = () => {
       <main className="flex-1 p-4 lg:ml-72 lg:mt-0 mt-16">
         {/* Notification Bar (appears above main content) */}
         <NotificationBar message="New course update available!" />
-        <Loader />
 
 
         <Outlet />
