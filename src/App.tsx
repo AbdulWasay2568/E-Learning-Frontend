@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Role } from "./interfaces/enums.interface";
 import GroupDetail from './components/student/Group/GroupDetails';
 
+
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import Login from './pages/Login';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/support" element={<Support />} />
         <Route path="/group" element={<GroupDetail />} />
+
 {/* Courses */}
         <Route path="/course/detail/:id" element={<CourseDetail />} />
 

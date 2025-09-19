@@ -6,7 +6,7 @@ import { Role } from "../interfaces/enums.interface";
 export default function SignUp() {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export default function SignUp() {
 
     try {
       const result = await registerUser({
-        name,
+        username,
         email,
         password,
         role: Role.Student,
@@ -46,17 +46,17 @@ export default function SignUp() {
         </h2>
 
         <form onSubmit={handleRegister} className="space-y-5">
-          {/* Full Name */}
+          {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
+              Username
             </label>
             <input
               type="text"
               placeholder="e.g. John Doe"
               className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>

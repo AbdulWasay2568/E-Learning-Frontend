@@ -32,7 +32,6 @@ export const fetchChatMessageById = async (id: number) => {
 };
 
 
-
 export const updateChatMessage = async (id: number, data: UpdateChatMessageDto) => {
   try {
     const res = await apiClient.put(`/chat-messages/${id}`, data);

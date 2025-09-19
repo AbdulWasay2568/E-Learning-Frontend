@@ -4,6 +4,7 @@ export interface Group {
   createdAt: string;
 }
 
+<<<<<<< HEAD
 // export interface CreateGroupDto {
 //   name: string;
 // }
@@ -15,6 +16,12 @@ export interface CreateGroupDto {
 }
 
 
+=======
+export interface CreateGroupDto {
+  name: string;
+}
+
+>>>>>>> 3dd66d0530c4868e3aad4d0c1c27fd4eda5e7d53
 export interface UpdateGroupDto {
   name?: string;
 } 
