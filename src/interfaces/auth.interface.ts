@@ -2,7 +2,7 @@ import { Role } from "./enums.interface";
 
 export interface RegisterUserInput {
     email: string;
-    name: string;
+    username: string;
     password: string;
     role: Role;
 }

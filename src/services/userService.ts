@@ -61,3 +61,13 @@ export const updateUserImage = async (userId: number, imageFile: File) => {
   );
   return response.data;
 }; 
+
+export const getUserByUsername = async (username: string) => {
+  try {
+    const res = await apiClient.get(`/users/username/${username}`);
+    return res.data;
+  } catch (err) {
+    console.error(`Failed to fetch user with username ${username}:`, err);
+    throw err;
+  }
+};
