@@ -1,0 +1,10 @@
+export { default as userRouter } from './user.routes';
+export { default as noteRouter } from './note.routes';
+export { default as enrollmentRouter } from './enrollment.routes';
+export { default as feedbackRouter } from './feedback.routes';
+export { default as groupMemberRouter } from './group-member.routes';
+export { default as groupRouter } from './group.routes';
+export { default as questionRouter } from './question.routes';
+export { default as quizRouter } from './quiz.routes';
+export { default as chatMessageRouter } from './chat-message.routes';
+export { default as commentRouter } from './comment.routes';

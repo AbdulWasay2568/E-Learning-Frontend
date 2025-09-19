@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Users, ChevronDown, Paperclip, Send, Plus, Search, Smile} from "lucide-react";
+import { Users, ChevronDown, Paperclip, Send, Plus, Search, Smile, Group, DeleteIcon} from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
+
+import { createGroup, fetchGroups } from "../../../services/groupService";
+import {createChatMessage, fetchChatMessages, deleteChatMessage} from "../../../services/chatMessageService";
+
 const letterColors: Record<string, { color: string; bg: string }> = {
   A: { color: "#0047AB", bg: "#B3D9FF" },
   B: { color: "#800080", bg: "#E6CCFF" },
@@ -30,19 +34,54 @@ const letterColors: Record<string, { color: string; bg: string }> = {
   Z: { color: "#708090", bg: "#E6EBF0" },
 };
 
-type Message = {
-  text: string;
-  time: string;
-};
+// type Message = {
+//   text: string;
+//   time: string;
+// };
 
-type Group = {
+interface ChatMessage {
+  id: number;
+  content: string;
+  createdAt: string;
+  userId: number;
+  groupId: number;
+}
+
+// type Group = {
+
+//   id?: number; 
+//   name: string;
+//   section: string;
+//   firstname: string;
+//   messages: Message[];
+//   room:string;
+//   subject:string;
+//   members?: GroupMember[]
+// };
+
+interface Group {
+  id?: number; 
   name: string;
   section: string;
   firstname: string;
-  messages: Message[];
-  room:string;
+  room: string;
+  subject: string;
+  members?: GroupMember[];
+  messages: ChatMessage[];   // backend messages
 };
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+interface GroupMember {
+  id: number;
+  userId: number;
+  groupId: number;
+  user?: User; 
+}
 const GroupDetail: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [section, setSection] = useState<string>("");
@@ -53,6 +92,9 @@ const GroupDetail: React.FC = () => {
   const [inputmessage, setInputmessage] = useState<string>("");
   const [addgroup, setAddgroup] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [addmember, setAddmember] = useState<GroupMember | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
+
   // const pickerRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const currentTime = new Date().toLocaleTimeString([], {
@@ -61,40 +103,204 @@ const GroupDetail: React.FC = () => {
   });
 
 useEffect(() => {
+  fetchUserGroups();
+  myfetchChatMessages();
+}, []);
+
+useEffect(() => {
   bottomRef.current?.scrollIntoView({ behavior: "smooth",   // or "auto" if you want instant
     block: "end", });
 }, [inputmessage]);
 
-  const mymessages = () => {
-    if (!inputmessage.trim() || !selectedGroup) return;
-    const message: Message = { text: inputmessage, time: currentTime };
+  // const mymessages = () => {
+  //   if (!inputmessage.trim() || !selectedGroup) return;
+  //   const message: Message = { text: inputmessage, time: currentTime };
 
+  //   setAddgroup((prev) =>
+  //     prev.map((group) =>
+  //       group.name === selectedGroup.name && group.section === selectedGroup.section
+  //         ? { ...group, messages: [...group.messages, message] }
+  //         : group
+  //     )
+  //   );
+
+  //   setInputmessage("");
+  // };
+
+    
+  const mymessages = async () => {
+  if (!inputmessage.trim() || !selectedGroup) return;
+
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  const userId = user.id; // get actual userId
+  const groupId = selectedGroup.id; // assume your group has an id
+
+  try {
+    const response = await createChatMessage({
+      content: inputmessage,   // just the text, not an object
+      userId: userId,
+      groupId: groupId,
+    });
+
+    console.log("API response:", response);
+
+    // Update UI state
     setAddgroup((prev) =>
       prev.map((group) =>
-        group.name === selectedGroup.name && group.section === selectedGroup.section
-          ? { ...group, messages: [...group.messages, message] }
+        group.id === selectedGroup.id
+          ? { ...group, messages: [...group.messages, response] }
           : group
       )
     );
 
-    setInputmessage("");
-  };
+    setInputmessage(""); // clear input
+  } catch (error) {
+    console.error("Failed to create chat message:", error);
+  }
+};
 
-  const addgroups = () => {
-    const firstChar = name.charAt(0).toUpperCase();
-    const groups: Group = {
-      name,
-      section,
-      firstname: firstChar,
-      messages: [],
-      room
+const myfetchChatMessages = async () => {
+  try {
+    const chatMessages: ChatMessage[] = await fetchChatMessages();
+
+    // For now, attach all messages to the selected group (if any)
+    if (selectedGroup) {
+      setAddgroup((prev) =>
+        prev.map((group) =>
+          group.id === selectedGroup.id
+            ? { ...group, messages: chatMessages }
+            : group
+        )
+      );
+    }
+  } catch (error) {
+    console.error("Failed to fetch chat messages:", error);
+  }
+};
+
+
+
+// 1. Selecting a message (e.g. onClick in chat bubble)
+const handleSelectMessage = (msgId: number) => {
+  setSelectedMessageId(msgId);
+
+  const selectedMsg = addgroup
+    .find((g) => g.id === selectedGroup?.id)
+    ?.messages.find((msg) => msg.id === msgId);
+
+  console.log("Currently selected message:", selectedMsg);
+};
+
+// 2. Deleting the currently selected message
+const handleDeleteMessage = async () => {
+  if (!selectedMessageId) return;
+
+  try {
+    await deleteChatMessage(selectedMessageId);
+
+    // Remove it from local state too, so UI updates
+    setAddgroup((prev) =>
+      prev.map((group) =>
+        group.id === selectedGroup?.id
+          ? {
+              ...group,
+              messages: group.messages.filter(
+                (msg) => msg.id !== selectedMessageId
+              ),
+            }
+          : group
+      )
+    );
+
+    console.log(`Message ${selectedMessageId} deleted`);
+    setSelectedMessageId(null); // reset selection
+  } catch (err) {
+    console.error("Failed to delete message:", err);
+  }
+};
+
+
+  // const addgroups = () => {
+  //   const firstChar = name.charAt(0).toUpperCase();
+  //   const groups: Group = {
+  //     name,
+  //     section,
+  //     firstname: firstChar,
+  //     messages: [],
+  //     room,
+  // subject
+  //   };
+  //   setAddgroup((prev) => [...prev, groups]);
+  //   setName("");
+  //   setSection("");
+  //   setRoom("");
+  //   setSubject("");
+  // };
+
+
+const addgroups = async () => {
+  if (!name) return; // Only name is required for API
+
+  const firstChar = name.charAt(0).toUpperCase();
+
+  try {
+    // localStorage.setItem("user", JSON.stringify(name));
+
+    const response = await createGroup({ name: name });
+    console.log("API response:", response); // Check the structure
+
+    // Extract the group object from the response
+    const backendGroup = response.group; // This should contain { id, name, createdAt }
+    
+    const groupWithUI = { 
+      ...backendGroup,    // This has the name from backend
+      firstname: firstChar, 
+      messages: [] 
     };
-    setAddgroup((prev) => [...prev, groups]);
+
+    setAddgroup((prev) => [...prev, groupWithUI]);
+
+    // Clear only the name field since others are not needed
     setName("");
     setSection("");
     setRoom("");
     setSubject("");
-  };
+
+  } catch (error) {
+    console.error("Failed to create group:", error);
+  }
+};
+
+
+
+const [loading, setLoading] = useState<boolean>(true);
+
+const fetchUserGroups = async () => {
+  try {
+    setLoading(true);
+    const user = JSON.parse(localStorage.getItem("user") || '{}');
+    console.log("Current user:", user); // Check if user exists
+    
+    const allGroups: Group[] = await fetchGroups();
+    console.log("All groups from API:", allGroups); // Check what API returns
+    
+    setAddgroup(allGroups);
+    // const userGroups = allGroups.filter((group: Group) => {
+    //   console.log("Group:", group.name, "Members:", group.members);
+    //   return group.members?.some((member: GroupMember) => {
+    //     console.log("Member userId:", member.userId, "Current user id:", user.id);
+    //     return member.userId === user.id;
+    //   });
+    // });
+    
+    // console.log("Filtered user groups:", userGroups);
+    // setAddgroup(userGroups);
+  } catch (error) {
+    console.error("Failed to fetch groups:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const [showPicker, setShowPicker] = useState<boolean>(false);
 
@@ -168,15 +374,21 @@ useEffect(() => {
             </button>
           </div>
 
+          {loading ? (
+    <div className="text-center py-4">Loading groups...</div>
+  ) : (
+    <>
+
           {!toggle &&
             addgroup.map((e, i) => {
-              const { color, bg } = letterColors[e.firstname] || {
+              const firstChar = e.name.charAt(0).toUpperCase();
+              const { color, bg } = letterColors[firstChar] || {
                 color: "#333",
                 bg: "#ddd",
               };
               return (
                 <div
-                  key={i}
+                  key={e.id}
                   className="flex items-center mt-5 px-2 py-2 cursor-pointer hover:bg-gray-300 rounded-xl w-60"
                   onClick={() => setSelectedGroup(e)}
                 >
@@ -184,7 +396,7 @@ useEffect(() => {
                     className="w-8 h-8 flex items-center justify-center rounded-full"
                     style={{ backgroundColor: bg, color }}
                   >
-                    {e.firstname}
+                    {firstChar}
                   </div>
                   <div className="ml-4">
                     <p>{e.name}</p>
@@ -193,6 +405,8 @@ useEffect(() => {
                 </div>
               );
             })}
+             </>
+  )}
         </div>
       </div>
 
@@ -220,16 +434,26 @@ useEffect(() => {
                 onClick={() => setView("media")}
                 style={{
                   backgroundColor:
-                    letterColors[selectedGroup.firstname]?.bg || "#ddd",
+                    letterColors[selectedGroup.name.charAt(0).toUpperCase()]?.bg || "#ddd",
                   color:
-                    letterColors[selectedGroup.firstname]?.color || "#333",
+                    letterColors[selectedGroup.name.charAt(0).toUpperCase()]?.color || "#333",
                 }}
               >
-                {selectedGroup.firstname}
+                {selectedGroup.name.charAt(0).toUpperCase()} 
+
+               
               </div>
-              <div className="ml-4">
-                <p className="font-medium">{selectedGroup.name}</p>
+              <div className="flex items-center justify-between w-full">
+                    <div className="ml-4">
+                      <p className="font-medium">{selectedGroup.name}</p>
+                      
+                    </div>
+                    <div className="border h-5 flex items-center justify-center bg-gradient-to-r from-pink-500 to-yellow-500 text-white p-4 rounded-lg"> 
+                      <span className="text-white">Add Members</span>
+                    </div>
               </div>
+              
+              
             </div>
 
             {/* Messages */}
@@ -237,16 +461,26 @@ useEffect(() => {
               {addgroup
                 .find(
                   (g) =>
-                    g.name === selectedGroup.name &&
-                    g.section === selectedGroup.section
+                    g.name === selectedGroup.name 
+                    // g.section === selectedGroup.section
                 )
                 ?.messages.map((msg, i) => (
                   <div
-                    key={i}
+                    key={msg.id}
                     className="bg-purple-700 text-white max-w-[60%] px-3 py-2 rounded-md mt-2 self-end break-words"
+                    onClick={() => handleSelectMessage(msg.id)}
                   >
-                    <p>{msg.text}</p>
-                    <p className="text-xs text-right mt-1">{msg.time}</p>
+                    <p>{msg.content} </p>
+                    
+                       <p className="text-xs text-right mt-1">
+        {new Date(msg.createdAt).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </p>
+      <DeleteIcon
+       onClick={handleDeleteMessage}
+  />
                   </div>
                 ))}
               <div ref={bottomRef} />
@@ -379,11 +613,11 @@ useEffect(() => {
               className="w-25 h-25 flex items-center justify-center rounded-full font-bold"
               style={{
                 backgroundColor:
-                  letterColors[selectedGroup.firstname]?.bg || "#ddd",
-                color: letterColors[selectedGroup.firstname]?.color || "#333",
+                  letterColors[selectedGroup.name.charAt(0).toUpperCase()]?.bg || "#ddd",
+                color: letterColors[selectedGroup.name.charAt(0).toUpperCase()]?.color || "#333",
               }}
             >
-              <span className="text-xl font-medium ">{selectedGroup.firstname}</span>
+              <span className="text-xl font-medium ">{selectedGroup.name.charAt(0).toUpperCase()} </span>
             </div>
             <span className="text-xl font-medium">{selectedGroup.name}</span>
             <span>{selectedGroup.room}</span>

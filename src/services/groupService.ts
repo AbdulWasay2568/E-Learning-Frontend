@@ -1,6 +1,18 @@
 import { apiClient } from './axios';
 import type { CreateGroupDto, UpdateGroupDto } from '../interfaces/group.interface';
 
+export const createGroup = async (data: CreateGroupDto) => {
+  try {
+    console.log("Sending groupData:", data);
+    const res = await apiClient.post('/groups', data);
+    // return res.data.group;
+    return res.data;
+  } catch (err) {
+    console.error('Failed to create group:', err);
+    throw err;
+  }
+};
+
 export const fetchGroups = async () => {
   try {
     const res = await apiClient.get('/groups');
@@ -21,15 +33,6 @@ export const fetchGroupById = async (id: number) => {
   }
 };
 
-export const createGroup = async (data: CreateGroupDto) => {
-  try {
-    const res = await apiClient.post('/groups', data);
-    return res.data.group;
-  } catch (err) {
-    console.error('Failed to create group:', err);
-    throw err;
-  }
-};
 
 export const updateGroup = async (id: number, data: UpdateGroupDto) => {
   try {

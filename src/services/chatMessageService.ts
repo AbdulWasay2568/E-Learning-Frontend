@@ -1,6 +1,16 @@
 import { apiClient } from './axios';
 import type { CreateChatMessageDto, UpdateChatMessageDto } from '../interfaces/chat-message.interface';
 
+export const createChatMessage = async (data: CreateChatMessageDto) => {
+  try {
+    const res = await apiClient.post('/chat-messages', data);
+    return res.data.chatMessage;
+  } catch (err) {
+    console.error('Failed to create chat message:', err);
+    throw err;
+  }
+};
+
 export const fetchChatMessages = async () => {
   try {
     const res = await apiClient.get('/chat-messages');
@@ -21,15 +31,7 @@ export const fetchChatMessageById = async (id: number) => {
   }
 };
 
-export const createChatMessage = async (data: CreateChatMessageDto) => {
-  try {
-    const res = await apiClient.post('/chat-messages', data);
-    return res.data.chatMessage;
-  } catch (err) {
-    console.error('Failed to create chat message:', err);
-    throw err;
-  }
-};
+
 
 export const updateChatMessage = async (id: number, data: UpdateChatMessageDto) => {
   try {

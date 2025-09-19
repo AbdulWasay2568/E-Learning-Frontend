@@ -1,0 +1,201 @@
+// generator erd {
+//   provider = "prisma-erd-generator"
+//   output   = "./ERD/erd.svg"
+// }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(Student)
+  profileImage  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  courses       Course[]        @relation("CourseTeacher")
+  enrollments   Enrollment[]
+  groups        GroupMember[]
+  notes         Note[]
+  quizzes       Quiz[]
+  chatMessages  ChatMessage[]
+  progress      Progress[]
+  feedbacks     Feedback[]
+  comments      Comment[]
+}
+
+model Course {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  thumbnail   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  teacher     User        @relation("CourseTeacher", fields: [teacherId], references: [id])
+  teacherId   Int
+  lectures    Lecture[]
+  enrollments Enrollment[]
+  quizzes     Quiz[]
+  feedbacks   Feedback[]
+}
+
+model Lecture {
+  id         Int      @id @default(autoincrement())
+  title      String
+  description String
+  videoUrl   String
+  duration   String
+  createdAt  DateTime  @default(now())
+
+  course     Course    @relation(fields: [courseId], references: [id])
+  courseId   Int
+  notes      Note[]
+  progress   Progress[]
+  comments   Comment[] 
+}
+
+model Note {
+  id         Int      @id @default(autoincrement())
+  summary    String   
+  createdAt  DateTime  @default(now())
+
+  lecture    Lecture   @relation(fields: [lectureId], references: [id])
+  lectureId  Int
+
+  user       User      @relation(fields: [userId], references: [id])
+  userId     Int
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+}
+
+model Quiz {
+  id        Int      @id @default(autoincrement())
+  title     String
+  createdAt DateTime @default(now())
+
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+
+  createdBy User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  questions Question[]
+}
+
+model Question {
+  id        Int      @id @default(autoincrement())
+  question  String
+  options   String[] 
+  answer    String
+  createdAt DateTime @default(now())
+
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  quizId    Int
+}
+
+model Progress {
+  id          Int      @id @default(autoincrement())
+  completed   Boolean  @default(false)
+  percentage  Float    @default(0)
+  lastWatched Int?     
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+
+  lecture     Lecture  @relation(fields: [lectureId], references: [id])
+  lectureId   Int
+}
+
+model Group {
+  id        Int          @id @default(autoincrement())
+  name      String
+  createdAt DateTime      @default(now())
+
+  members   GroupMember[]
+  messages  ChatMessage[]
+}
+
+model GroupMember {
+  id       Int    @id @default(autoincrement())
+  role     GroupRole @default(Member)
+
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int
+
+  group    Group  @relation(fields: [groupId], references: [id])
+  groupId  Int
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  group     Group?   @relation(fields: [groupId], references: [id])
+  groupId   Int?
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  comment   String
+  createdAt DateTime  @default(now())
+
+
+  lecture   Lecture?  @relation(fields: [lectureId], references: [id])
+  lectureId Int?
+
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  parentId  Int?
+
+  replies   Comment[] @relation("CommentReplies")
+}
+
+
+enum Role {
+  Student
+  Admin
+}
+
+enum GroupRole {
+  Admin
+  Member
+}
