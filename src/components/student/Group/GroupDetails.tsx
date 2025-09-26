@@ -4,7 +4,8 @@ import EmojiPicker from "emoji-picker-react";
 
 import { createGroup, fetchGroups } from "../../../services/groupService";
 import {createChatMessage, fetchChatMessages, deleteChatMessage} from "../../../services/chatMessageService";
-
+import {fetchUsers} from "../../../services/userService";
+import {createGroupMember, fetchGroupMembers, fetchGroupMemberById, fetchGroupMembersByGroup} from "../../../services/groupMemberService";
 const letterColors: Record<string, { color: string; bg: string }> = {
   A: { color: "#0047AB", bg: "#B3D9FF" },
   B: { color: "#800080", bg: "#E6CCFF" },
@@ -47,18 +48,6 @@ interface ChatMessage {
   groupId: number;
 }
 
-// type Group = {
-
-//   id?: number; 
-//   name: string;
-//   section: string;
-//   firstname: string;
-//   messages: Message[];
-//   room:string;
-//   subject:string;
-//   members?: GroupMember[]
-// };
-
 interface Group {
   id?: number; 
   name: string;
@@ -74,14 +63,25 @@ interface User {
   id: number;
   name: string;
   email: string;
+  username: string;
 }
+export const GroupRole = {
+  Admin: "Admin",
+  Member: "Member",
+} as const;
+
+export type GroupRole = typeof GroupRole[keyof typeof GroupRole];
+
 
 interface GroupMember {
   id: number;
   userId: number;
   groupId: number;
   user?: User; 
+  role?:GroupRole;
 }
+
+
 const GroupDetail: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [section, setSection] = useState<string>("");
@@ -94,7 +94,11 @@ const GroupDetail: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [addmember, setAddmember] = useState<GroupMember | null>(null);
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null);
-
+  const [newform, setNewform] = useState<boolean>(false);
+  const [searchmember, setSearchmember] = useState<string>("");
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [showmembersform, setShowmembersform] = useState<boolean>(false);
+ 
   // const pickerRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const currentTime = new Date().toLocaleTimeString([], {
@@ -311,7 +315,111 @@ const fetchUserGroups = async () => {
 
     const [view, setView] = useState<"list" | "chat" | "media">("list");
 
+    const [checkedUsers, setCheckedUsers] = useState<number[]>([]);
 
+    const handleCheck = (id: number) => {
+    setCheckedUsers((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setSearchmember(e.target.value);
+};
+
+// runs whenever searchmember or checkedUsers changes
+useEffect(() => {
+  const fetchAndFilter = async () => {
+    try {
+      const users: User[] = await fetchUsers();
+
+      // always keep checked users first
+      const checked = users.filter((u) => checkedUsers.includes(u.id));
+
+      let results: User[] = [];
+
+      if (searchmember.trim()) {
+        // show only search matches (excluding already checked ones to avoid duplicates)
+        results = users.filter(
+          (u) =>
+            !checkedUsers.includes(u.id) &&
+            u.username.toLowerCase().includes(searchmember.toLowerCase())
+        );
+      } else {
+        // if no search, show all non-checked users
+        // results = users.filter((u) => !checkedUsers.includes(u.id));
+      }
+
+      // final list: checked on top + results below
+      setFilteredUsers([...checked, ...results]);
+    } catch (err) {
+      console.error("Error searching users:", err);
+    }
+  };
+
+  fetchAndFilter();
+}, [searchmember, checkedUsers]);
+
+// const addmembers = async () => {
+//   if (!selectedGroup) return;
+
+//   try {
+//     for (const userId of checkedUsers) {
+//       await createGroupMember({
+//   userId,
+//   groupId: selectedGroup.id!,
+//   role: GroupRole.Member
+ 
+// });
+//     }
+//     console.log("Members added successfully!");
+//     setNewform(false)
+//   } catch (err) {
+//     console.error("Failed to add members:", err);
+//   }
+// };
+
+const addmembers = async () => {
+  if (!selectedGroup) return;
+
+  try {
+    // Always fetch fresh members before adding
+    const updatedGroup = await fetchGroupMemberById(selectedGroup.id!);
+    const existingUserIds = updatedGroup.members?.map((m:any) => m.userId) ?? [];
+
+    for (const userId of checkedUsers) {
+      if (existingUserIds.includes(userId)) {
+        console.log(`User ${userId} is already a member, skipping...`);
+        continue;
+      }
+
+      await createGroupMember({
+        userId,
+        groupId: selectedGroup.id!,
+        role: GroupRole.Member,
+      });
+    }
+
+    console.log("Members added successfully!");
+    setNewform(false);
+  } catch (err) {
+    console.error("Failed to add members:", err);
+  }
+};
+
+const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
+
+const loadMembers = async () => {
+  if (!selectedGroup) return;
+  const members = await fetchGroupMembersByGroup(selectedGroup.id);
+  setGroupMembers(members);
+};
+
+useEffect(() => {
+  if (selectedGroup) {
+    loadMembers();
+  }
+}, [selectedGroup]);
 
   return (
 
@@ -448,9 +556,57 @@ const fetchUserGroups = async () => {
                       <p className="font-medium">{selectedGroup.name}</p>
                       
                     </div>
-                    <div className="border h-5 flex items-center justify-center bg-gradient-to-r from-pink-500 to-yellow-500 text-white p-4 rounded-lg"> 
+              <div className="relative">
+                    <div className="border h-5 flex items-center justify-center bg-gradient-to-r from-pink-500 to-yellow-500 text-white p-4 rounded-lg" onClick={()=>setNewform(true)}> 
                       <span className="text-white">Add Members</span>
                     </div>
+
+    {newform && (
+      <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg p-4 w-64 z-20">
+        <div className="relative mb-4">
+          <input
+            type="text"
+            placeholder="Search members ..."
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            value={searchmember}
+            onChange={handleSearch} 
+          />
+          <Search className="absolute right-3 top-2.5 text-gray-500 w-4 h-4" />
+        </div>
+
+        <div className="h-60 overflow-y-auto">
+          {filteredUsers.map((user) => (
+            <div
+              key={user.id}
+              className="p-2 hover:bg-purple-100 cursor-pointer flex "
+              onClick={() => console.log("Selected user:", user)}
+            >
+              <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded mr-3 mt-1" checked={checkedUsers.includes(user.id)}
+              onChange={() => handleCheck(user.id)}/>
+              <p className="font-medium">{user.username}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-between mt-4">
+          <button
+            type="button"
+            className="px-4 py-2 text-purple-700 rounded hover:bg-gray-200"
+            onClick={() => setNewform(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800"
+            onClick={addmembers}
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    )}
+</div>
               </div>
               
               
@@ -595,6 +751,7 @@ const fetchUserGroups = async () => {
         </div>
       )}
 
+     
       {/* Media Info */}
       {selectedGroup && (
         <div
@@ -621,7 +778,72 @@ const fetchUserGroups = async () => {
             </div>
             <span className="text-xl font-medium">{selectedGroup.name}</span>
             <span>{selectedGroup.room}</span>
+
+             <div className="relative mb-5 mt-3">
+                    <div className="border h-5 flex items-center justify-center bg-gradient-to-r from-pink-500 to-yellow-500 text-white p-4 rounded-lg" onClick={()=>setShowmembersform(true)}> 
+                      <span className="text-white">Show Members</span>
+                    </div>
+
+    {showmembersform && (
+      <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg p-4 w-64 z-20 w-100">
+        <div className="relative mb-4">
+          <input
+            type="text"
+            placeholder="Search members ..."
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            value={searchmember}
+            onChange={handleSearch} 
+          />
+          <Search className="absolute right-3 top-2.5 text-gray-500 w-4 h-4" />
+        </div>
+
+                 
+        <div className="flex justify-between mt-4">
+          <button
+            type="button"
+            className="px-4 py-2 text-purple-700 rounded hover:bg-gray-200"
+            onClick={() => setShowmembersform(false)}
+          ><div className="h-60 overflow-y-auto">
+  {groupMembers.map((member) => (
+  <div
+    key={member.id}
+    className="p-2 hover:bg-purple-100 cursor-pointer flex items-center space-x-2 w-100"
+  >
+    {/* profile image */}
+    {member.user?.profileImage ? (
+      <img
+        src={member.user.profileImage}
+        alt={member.user.name}
+        className="w-8 h-8 rounded-full"
+      />
+    ) : (
+      <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+        {member.user?.name?.[0]?.toUpperCase() ?? "?"}
+      </div>
+    )}
+
+    {/* user name + role */}
+    <div>
+      <p className="font-medium">{member.user?.name ?? "Unknown User"}</p>
+      {/* <p className="text-sm text-gray-500">{member.role ?? "No Role"}</p> */}
+    </div>
+  </div>
+))}
+
+</div>
+
+            Cancel
+          </button>
+         
+        </div>
+      </div>
+    )}
+</div>
+              
+            
           </div>
+
+          
 
           {/* media information */}
           <div className="container infodiv p-4">

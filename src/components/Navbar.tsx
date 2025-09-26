@@ -23,10 +23,8 @@ const Navbar = () => {
           <Link to="/courses" className="hover:text-violet-600 font-medium">Courses</Link>
           <Link to="/support" className="hover:text-violet-600 font-medium">Support</Link>
           <Link to="/aboutus" className="hover:text-violet-600 font-medium">About Us</Link>
-<<<<<<< HEAD
           <Link to="/group" className="hover:text-violet-600 font-medium">Group</Link>
-=======
->>>>>>> 3dd66d0530c4868e3aad4d0c1c27fd4eda5e7d53
+
           <Link to="/login" className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 transition">Login</Link>
         </div>
 
@@ -50,7 +48,7 @@ const Navbar = () => {
         <div className="px-4 pb-4 space-y-2">
           <Link to="/" className="block hover:text-violet-600" onClick={handleLinkClick}>Home</Link>
           <Link to="/courses" className="block hover:text-violet-600" onClick={handleLinkClick}>Courses</Link>
-          <Link to="/groups" className="block hover:text-violet-600" onClick={handleLinkClick}>Groups</Link>
+          <Link to="/group" className="block hover:text-violet-600" onClick={handleLinkClick}>Groups</Link>
           <Link to="/support" className="block hover:text-violet-600" onClick={handleLinkClick}>Support</Link>
           <Link to="/login" className="block px-4 py-2 bg-violet-600 text-white rounded text-center hover:bg-violet-700" onClick={handleLinkClick}>Login</Link>
         </div>
